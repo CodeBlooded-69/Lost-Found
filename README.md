@@ -45,5 +45,5 @@ To run this project locally on your machine, follow these steps:
 
 ### 1. Clone the repository
 ```bash
-git clone [https://github.com/YOUR_USERNAME/campus-connect.git](https://github.com/YOUR_USERNAME/campus-connect.git)
+git clone [https://github.com/CodeBlooded-69/Lost-Found.git](https://github.com/CodeBlooded-69/Lost-Found.git)
 cd campus-connect
