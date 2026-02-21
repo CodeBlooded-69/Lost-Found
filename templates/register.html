@@ -1,0 +1,120 @@
+{% extends 'base.html' %} {% block content %}
+<div class="row justify-content-center mt-5">
+  <div class="col-md-5">
+    <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+      <div class="card-header bg-white border-0 pt-5 pb-3 text-center">
+        <div
+          class="bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3 shadow-sm"
+          style="width: 60px; height: 60px"
+        >
+          <i class="bi bi-person-plus-fill fs-2"></i>
+        </div>
+        <h3 class="fw-bold text-dark">Create Account</h3>
+        <p class="text-muted small">
+          Join the community to report and find items.
+        </p>
+      </div>
+
+      <div class="card-body px-5 pb-5 pt-0">
+        <form action="/register" method="POST">
+          <div class="mb-3">
+            <label class="form-label text-muted small fw-bold">USERNAME</label>
+            <div class="input-group">
+              <span class="input-group-text bg-light border-end-0"
+                ><i class="bi bi-person text-muted"></i
+              ></span>
+              <input
+                type="text"
+                name="username"
+                class="form-control bg-light border-start-0"
+                placeholder="Student Name"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label text-muted small fw-bold"
+              >EMAIL ADDRESS</label
+            >
+            <div class="input-group">
+              <span class="input-group-text bg-light border-end-0"
+                ><i class="bi bi-envelope text-muted"></i
+              ></span>
+              <input
+                type="email"
+                name="email"
+                class="form-control bg-light border-start-0"
+                placeholder="name@university.edu"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label text-muted small fw-bold">PASSWORD</label>
+            <div class="input-group">
+              <span class="input-group-text bg-light border-end-0"
+                ><i class="bi bi-lock text-muted"></i
+              ></span>
+              <input
+                type="password"
+                name="password"
+                class="form-control bg-light border-start-0"
+                placeholder="Create a strong password"
+                required
+              />
+            </div>
+            <div class="form-text small text-muted">
+              Must be at least 8 characters.
+            </div>
+          </div>
+
+          <div class="d-grid gap-2 mb-4">
+            <button
+              type="submit"
+              class="btn btn-success rounded-pill py-2 fw-bold shadow-sm"
+            >
+              CREATE ACCOUNT
+            </button>
+          </div>
+
+          <div class="d-flex align-items-center mb-4">
+            <hr class="flex-grow-1 opacity-25" />
+            <span class="px-3 text-muted small">OR JOIN WITH</span>
+            <hr class="flex-grow-1 opacity-25" />
+          </div>
+
+          <div class="row g-2">
+            <div class="col-6">
+              <a
+                href="/login/google"
+                class="btn btn-outline-danger w-100 rounded-pill small"
+              >
+                <i class="bi bi-google me-2"></i> Google
+              </a>
+            </div>
+            <div class="col-6">
+              <a
+                href="/login/microsoft"
+                class="btn btn-outline-dark w-100 rounded-pill small"
+              >
+                <i class="bi bi-microsoft me-2"></i> Microsoft
+              </a>
+            </div>
+          </div>
+        </form>
+
+        <div class="text-center mt-5">
+          <small class="text-muted"
+            >Already have an account?
+            <a href="/login" class="fw-bold text-success text-decoration-none"
+              >Login here</a
+            >
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

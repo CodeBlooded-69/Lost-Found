@@ -1,0 +1,120 @@
+{% extends 'base.html' %} {% block content %}
+<div class="row justify-content-center mt-5">
+  <div class="col-md-5">
+    <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+      <div class="card-header bg-white border-0 pt-5 pb-3 text-center">
+        <div
+          class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3 shadow-sm"
+          style="width: 60px; height: 60px"
+        >
+          <i class="bi bi-person-fill fs-2"></i>
+        </div>
+        <h3 class="fw-bold text-dark">Welcome Back</h3>
+        <p class="text-muted small">
+          Enter your details to access your account.
+        </p>
+      </div>
+
+      <div class="card-body px-5 pb-5 pt-0">
+        <form action="/login" method="POST">
+          <div class="mb-3">
+            <label class="form-label text-muted small fw-bold"
+              >EMAIL ADDRESS</label
+            >
+            <div class="input-group">
+              <span class="input-group-text bg-light border-end-0"
+                ><i class="bi bi-envelope text-muted"></i
+              ></span>
+              <input
+                type="email"
+                name="email"
+                class="form-control bg-light border-start-0"
+                placeholder="name@university.edu"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label text-muted small fw-bold">PASSWORD</label>
+            <div class="input-group">
+              <span class="input-group-text bg-light border-end-0"
+                ><i class="bi bi-lock text-muted"></i
+              ></span>
+              <input
+                type="password"
+                name="password"
+                class="form-control bg-light border-start-0"
+                placeholder="••••••••"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                name="remember"
+                id="rememberMe"
+              />
+              <label class="form-check-label small text-muted" for="rememberMe">
+                Remember me
+              </label>
+            </div>
+            <a href="#" class="text-primary small fw-bold text-decoration-none"
+              >Forgot Password?</a
+            >
+          </div>
+
+          <div class="d-grid gap-2 mb-4">
+            <button
+              type="submit"
+              class="btn btn-primary rounded-pill py-2 fw-bold shadow-sm"
+            >
+              LOGIN
+            </button>
+          </div>
+
+          <div class="d-flex align-items-center mb-4">
+            <hr class="flex-grow-1 opacity-25" />
+            <span class="px-3 text-muted small">OR LOGIN WITH</span>
+            <hr class="flex-grow-1 opacity-25" />
+          </div>
+
+          <div class="row g-2">
+            <div class="col-6">
+              <button
+                type="button"
+                class="btn btn-outline-secondary w-100 rounded-pill small"
+              >
+                <i class="bi bi-google me-2"></i> Google
+              </button>
+            </div>
+            <div class="col-6">
+              <button
+                type="button"
+                class="btn btn-outline-secondary w-100 rounded-pill small"
+              >
+                <i class="bi bi-microsoft me-2"></i> Microsoft
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <div class="text-center mt-5">
+          <small class="text-muted"
+            >Don't have an account?
+            <a
+              href="/register"
+              class="fw-bold text-primary text-decoration-none"
+              >Sign up here</a
+            >
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,330 @@
+{% extends 'base.html' %} {% block content %}
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+/>
+
+<style>
+  /* Custom Animations & Styling */
+  .hover-scale:hover {
+    transform: scale(1.02);
+    transition: transform 0.2s;
+  }
+  .map-container {
+    border-radius: 15px;
+    overflow: hidden;
+    border: 2px solid #e9ecef;
+    position: relative;
+  }
+  .floating-loc-btn {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    z-index: 999;
+    background: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 50px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    font-weight: bold;
+    color: #0d6efd;
+    transition: all 0.3s;
+  }
+  .floating-loc-btn:hover {
+    background: #0d6efd;
+    color: white;
+    cursor: pointer;
+  }
+
+  /* Type Selector Styling */
+  .btn-check:checked + .btn-outline-danger {
+    background-color: #dc3545;
+    color: white;
+    border-color: #dc3545;
+    box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+  }
+  .btn-check:checked + .btn-outline-success {
+    background-color: #198754;
+    color: white;
+    border-color: #198754;
+    box-shadow: 0 5px 15px rgba(25, 135, 84, 0.3);
+  }
+  .form-floating > label {
+    padding-left: 1.5rem;
+  }
+  .form-control,
+  .form-select {
+    border-radius: 12px;
+    border: 1px solid #dee2e6;
+    padding-left: 1.5rem;
+  }
+  .form-control:focus,
+  .form-select:focus {
+    box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1);
+    border-color: #0d6efd;
+  }
+</style>
+
+<div class="row justify-content-center mb-5">
+  <div class="col-md-8 col-lg-7">
+    <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+      <div class="card-header bg-white border-0 text-center pt-5 pb-3">
+        <div
+          class="d-inline-block p-3 rounded-circle bg-primary bg-opacity-10 text-primary mb-3"
+        >
+          <i class="bi bi-bullseye display-5"></i>
+        </div>
+        <h2 class="fw-bold text-dark">Report an Item</h2>
+        <p class="text-muted">Help us connect lost items with their owners.</p>
+      </div>
+
+      <div class="card-body p-4 p-md-5">
+        <form action="/report" method="POST" enctype="multipart/form-data">
+          <input type="hidden" id="lat" name="lat" />
+          <input type="hidden" id="lng" name="lng" />
+
+          <div class="row g-3 mb-4">
+            <div class="col-6">
+              <input
+                type="radio"
+                class="btn-check"
+                name="type"
+                id="lost"
+                value="Lost"
+                checked
+              />
+              <label
+                class="btn btn-outline-danger w-100 py-3 rounded-4 fw-bold hover-scale"
+                for="lost"
+              >
+                <i class="bi bi-search me-2"></i> I Lost It
+              </label>
+            </div>
+            <div class="col-6">
+              <input
+                type="radio"
+                class="btn-check"
+                name="type"
+                id="found"
+                value="Found"
+              />
+              <label
+                class="btn btn-outline-success w-100 py-3 rounded-4 fw-bold hover-scale"
+                for="found"
+              >
+                <i class="bi bi-box-seam me-2"></i> I Found It
+              </label>
+            </div>
+          </div>
+
+          <h6 class="fw-bold text-uppercase text-muted small mb-3 ls-1">
+            Item Details
+          </h6>
+
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <div class="form-floating">
+                <select
+                  class="form-select"
+                  id="category"
+                  name="category"
+                  required
+                >
+                  <option value="" disabled selected>Select...</option>
+                  <option value="Electronics">Electronics</option>
+                  <option value="Documents">Documents</option>
+                  <option value="Keys">Keys</option>
+                  <option value="Clothing">Clothing</option>
+                  <option value="Other">Other</option>
+                </select>
+                <label for="category"
+                  ><i class="bi bi-grid me-2"></i>Category</label
+                >
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-floating">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="itemName"
+                  name="name"
+                  placeholder="Item Name"
+                  required
+                />
+                <label for="itemName"
+                  ><i class="bi bi-tag me-2"></i>Item Name (e.g. Blue
+                  Wallet)</label
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="form-floating mb-4">
+            <textarea
+              class="form-control"
+              placeholder="Description"
+              id="desc"
+              name="description"
+              style="height: 100px"
+              required
+            ></textarea>
+            <label for="desc"
+              ><i class="bi bi-card-text me-2"></i>Description (Color, Brand,
+              Marks...)</label
+            >
+          </div>
+
+          <hr class="my-4 text-muted opacity-25" />
+          <h6 class="fw-bold text-uppercase text-muted small mb-3 ls-1">
+            Location
+          </h6>
+
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <div class="form-floating">
+                <select class="form-select" id="area" name="area" required>
+                  <option value="" disabled selected>Select Zone...</option>
+                  <option value="Main Building">Main Building</option>
+                  <option value="Library">Library</option>
+                  <option value="Cafeteria">Cafeteria</option>
+                  <option value="Sports Complex">Sports Complex</option>
+                  <option value="Science Block">Science Block</option>
+                  <option value="Hostels">Hostels</option>
+                  <option value="Parking Lot">Parking Lot</option>
+                  <option value="Other">Other</option>
+                </select>
+                <label for="area"
+                  ><i class="bi bi-building me-2"></i>Campus Zone</label
+                >
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-floating">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="specifics"
+                  name="specific_location"
+                  placeholder="Specifics"
+                  required
+                />
+                <label for="specifics"
+                  ><i class="bi bi-geo me-2"></i>Specific Spot (e.g. Table
+                  5)</label
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="map-container mb-2" style="height: 320px">
+            <div id="map" style="height: 100%; width: 100%"></div>
+            <button
+              type="button"
+              class="floating-loc-btn"
+              onclick="locateUser()"
+            >
+              <i class="bi bi-crosshair me-1"></i> Locate Me
+            </button>
+          </div>
+          <small class="text-muted d-block text-end mb-4" id="gps-status"
+            >Click map to adjust pin.</small
+          >
+
+          <hr class="my-4 text-muted opacity-25" />
+
+          <div class="form-floating mb-3">
+            <input
+              type="text"
+              class="form-control"
+              id="contact"
+              name="contact_info"
+              placeholder="Contact"
+              required
+            />
+            <label for="contact"
+              ><i class="bi bi-telephone me-2"></i>Your Contact (Email or
+              Phone)</label
+            >
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label text-muted small fw-bold ms-1"
+              >UPLOAD PHOTO</label
+            >
+            <input
+              type="file"
+              name="file"
+              class="form-control form-control-lg"
+            />
+          </div>
+
+          <div class="form-check form-switch mb-4 ms-1">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              name="is_urgent"
+              id="urgent"
+              style="width: 3em; height: 1.5em; cursor: pointer"
+            />
+            <label
+              class="form-check-label fw-bold pt-1 ms-2 text-danger"
+              for="urgent"
+              >Mark as High Priority / Urgent</label
+            >
+          </div>
+
+          <button
+            type="submit"
+            class="btn btn-primary w-100 py-3 rounded-pill fw-bold shadow hover-scale fs-5"
+          >
+            Submit Report <i class="bi bi-arrow-right-short"></i>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+<script>
+  var map = L.map("map").setView([28.6139, 77.209], 15);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: "© OpenStreetMap",
+  }).addTo(map);
+  var marker;
+
+  function locateUser() {
+    if (navigator.geolocation) {
+      document.getElementById("gps-status").innerHTML = "Locating...";
+      navigator.geolocation.getCurrentPosition(
+        function (position) {
+          var lat = position.coords.latitude;
+          var lng = position.coords.longitude;
+          map.setView([lat, lng], 18);
+          if (marker) map.removeLayer(marker);
+          marker = L.marker([lat, lng]).addTo(map);
+          document.getElementById("lat").value = lat;
+          document.getElementById("lng").value = lng;
+          document.getElementById("gps-status").innerHTML =
+            '<span class="text-success"><i class="bi bi-check"></i> Location Found</span>';
+        },
+        function () {
+          document.getElementById("gps-status").innerHTML =
+            '<span class="text-danger">GPS Denied. Click map manually.</span>';
+        },
+      );
+    }
+  }
+
+  // Auto-locate on load
+  locateUser();
+
+  map.on("click", function (e) {
+    if (marker) map.removeLayer(marker);
+    marker = L.marker(e.latlng).addTo(map);
+    document.getElementById("lat").value = e.latlng.lat;
+    document.getElementById("lng").value = e.latlng.lng;
+  });
+</script>
+{% endblock %}

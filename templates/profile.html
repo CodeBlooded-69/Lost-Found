@@ -1,0 +1,147 @@
+{% extends 'base.html' %} {% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="mb-4">
+      <h2 class="fw-bold">My Profile</h2>
+      <p class="text-muted">
+        Manage your account settings and view your community impact.
+      </p>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-md-5">
+        <div class="card shadow-sm border-0 text-center h-100">
+          <div class="card-body p-4">
+            <div
+              class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3 shadow-sm"
+              style="width: 100px; height: 100px; font-size: 2.5rem"
+            >
+              {{ user.username[0] | upper }}
+            </div>
+
+            <h4 class="fw-bold mb-0">{{ user.username }}</h4>
+            <p class="text-muted small mb-3">{{ user.email }}</p>
+
+            <div
+              class="d-inline-block bg-warning bg-opacity-10 text-warning border border-warning rounded-pill px-4 py-2 mb-4"
+            >
+              <i class="bi bi-star-fill me-1"></i>
+              <span class="fw-bold">{{ user.karma }} Karma Points</span>
+            </div>
+
+            {% if user.is_admin %}
+            <div class="alert alert-danger py-2 small fw-bold">
+              <i class="bi bi-shield-lock-fill"></i> ADMINISTRATOR
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-7">
+        <div class="row g-3 mb-4">
+          <div class="col-6">
+            <div class="p-3 border rounded bg-white text-center h-100">
+              <h3 class="fw-bold text-primary mb-0">{{ items_posted }}</h3>
+              <small
+                class="text-muted text-uppercase fw-bold"
+                style="font-size: 0.7rem"
+                >Items Posted</small
+              >
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="p-3 border rounded bg-white text-center h-100">
+              <h3 class="fw-bold text-success mb-0">{{ items_returned }}</h3>
+              <small
+                class="text-muted text-uppercase fw-bold"
+                style="font-size: 0.7rem"
+                >Items Returned</small
+              >
+            </div>
+          </div>
+        </div>
+
+        <div class="card shadow-sm border-0">
+          <div class="card-header bg-white py-3">
+            <h6 class="mb-0 fw-bold">Account Settings</h6>
+          </div>
+          <div class="card-body">
+            <div class="mb-3">
+              <label class="form-label small text-muted fw-bold"
+                >USERNAME</label
+              >
+              <input
+                type="text"
+                class="form-control bg-light"
+                value="{{ user.username }}"
+                readonly
+              />
+            </div>
+            <div class="mb-4">
+              <label class="form-label small text-muted fw-bold">EMAIL</label>
+              <input
+                type="email"
+                class="form-control bg-light"
+                value="{{ user.email }}"
+                readonly
+              />
+            </div>
+
+            <hr class="opacity-10 my-4" />
+
+            <h6 class="fw-bold mb-3 text-primary">Change Password</h6>
+            <form action="/change_password" method="POST">
+              <div class="mb-3">
+                <label class="form-label small text-muted fw-bold"
+                  >CURRENT PASSWORD</label
+                >
+                <input
+                  type="password"
+                  name="current_password"
+                  class="form-control"
+                  placeholder="Enter current password"
+                  required
+                />
+              </div>
+
+              <div class="row g-2 mb-3">
+                <div class="col-6">
+                  <label class="form-label small text-muted fw-bold"
+                    >NEW PASSWORD</label
+                  >
+                  <input
+                    type="password"
+                    name="new_password"
+                    class="form-control"
+                    placeholder="New password"
+                    required
+                  />
+                </div>
+                <div class="col-6">
+                  <label class="form-label small text-muted fw-bold"
+                    >CONFIRM</label
+                  >
+                  <input
+                    type="password"
+                    name="confirm_password"
+                    class="form-control"
+                    placeholder="Confirm new"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div class="d-grid">
+                <button type="submit" class="btn btn-dark">
+                  Update Password
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

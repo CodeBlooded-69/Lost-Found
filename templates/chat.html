@@ -1,0 +1,131 @@
+{% extends 'base.html' %} {% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8 col-lg-6">
+    <div class="card shadow-sm h-100">
+      <div
+        class="card-header bg-white py-3 d-flex justify-content-between align-items-center"
+      >
+        <div class="d-flex align-items-center">
+          <div
+            class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2"
+            style="width: 40px; height: 40px"
+          >
+            <i class="bi bi-person-fill"></i>
+          </div>
+          <div>
+            <h6 class="mb-0 fw-bold">Secure Chat</h6>
+            <small class="text-muted">Regarding: {{ item.name }}</small>
+          </div>
+        </div>
+        <a href="/messages" class="btn-close"></a>
+      </div>
+
+      <div class="bg-light p-3 border-bottom">
+        <div
+          class="d-flex align-items-center bg-white p-3 rounded shadow-sm border mb-2"
+        >
+          <div
+            class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-3"
+            style="width: 50px; height: 50px"
+          >
+            <i class="bi bi-telephone-fill fs-5"></i>
+          </div>
+          <div>
+            <small
+              class="text-uppercase text-muted fw-bold"
+              style="font-size: 0.7rem"
+              >Owner Contact Details</small
+            >
+            <div class="fw-bold text-dark fs-5">{{ item.contact_info }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body bg-white overflow-auto" style="height: 350px">
+        {% for msg in messages %}
+        <div
+          class="d-flex flex-column mb-3 {% if msg.sender == current_user.username %}align-items-end{% else %}align-items-start{% endif %}"
+        >
+          <div
+            class="p-3 rounded-3 shadow-sm{% if msg.sender == current_user.username %} bg-primary text-white{% else %} bg-light text-dark border{% endif %}"
+            style="max-width: 75%; max-height: auto;"
+          >
+            <small class="d-block mb-1 opacity-75 fw-bold"
+              >{{ msg.sender }}</small
+            >
+
+            {% if msg.attachment %}
+            <div class="mb-2">
+              <a
+                href="{{ url_for('static', filename='uploads/' + msg.attachment) }}"
+                target="_blank"
+              >
+                <img
+                  src="{{ url_for('static', filename='uploads/' + msg.attachment) }}"
+                  class="img-fluid rounded border bg-white"
+                  style="max-height: 150px; object-fit: cover"
+                  alt="Attachment"
+                />
+              </a>
+            </div>
+            {% endif %} {{ msg.body }}
+          </div>
+          <small class="text-muted mt-1" style="font-size: 0.7rem"
+            >{{ msg.timestamp.strftime('%H:%M') }}</small
+          >
+        </div>
+        {% else %}
+        <div class="text-center text-muted mt-5">
+          <i class="bi bi-chat-text display-4 opacity-25"></i>
+          <p class="mt-2">Start the conversation below.</p>
+        </div>
+        {% endfor %}
+      </div>
+
+      <div class="card-footer bg-light p-3">
+        <form
+          action="/chat/{{ item.id }}"
+          method="POST"
+          enctype="multipart/form-data"
+          class="d-flex gap-2 align-items-center"
+        >
+          <label
+            class="btn btn-outline-secondary rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+            style="width: 45px; height: 45px; cursor: pointer"
+          >
+            <i class="bi bi-paperclip fs-5"></i>
+            <input
+              type="file"
+              name="attachment"
+              style="display: none"
+              onchange="this.form.submit()"
+            />
+          </label>
+
+          <input
+            type="text"
+            name="message"
+            class="form-control rounded-pill bg-white border"
+            placeholder="Type or attach proof..."
+            style="height: 45px"
+          />
+
+          <button
+            type="submit"
+            class="btn btn-primary rounded-circle shadow-sm"
+            style="width: 45px; height: 45px"
+          >
+            <i class="bi bi-send-fill"></i>
+          </button>
+        </form>
+        <div class="text-center mt-2">
+          <small class="text-muted" style="font-size: 0.7rem">
+            <i class="bi bi-info-circle"></i> Click the paperclip to send
+            images/receipts immediately.
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

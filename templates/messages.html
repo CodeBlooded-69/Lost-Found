@@ -1,0 +1,59 @@
+{% extends 'base.html' %} {% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card shadow-sm border-0">
+      <div class="card-header bg-white py-3">
+        <h3 class="fw-bold mb-0 text-primary">
+          <i class="bi bi-chat-dots-fill me-2"></i>Inbox
+        </h3>
+      </div>
+
+      <div class="list-group list-group-flush">
+        {% for item in chats %}
+        <a
+          href="/chat/{{ item.id }}"
+          class="list-group-item list-group-item-action p-3 d-flex align-items-center"
+        >
+          <img
+            src="{{ url_for('static', filename='uploads/' + item.image_file) }}"
+            class="rounded-circle me-3 border"
+            width="60"
+            height="60"
+            style="object-fit: cover"
+          />
+
+          <div class="flex-grow-1">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <h6 class="fw-bold text-dark mb-0">{{ item.name }}</h6>
+              <small class="text-muted" style="font-size: 0.8rem">
+                {{ item.messages[-1].timestamp.strftime('%b %d, %H:%M') }}
+              </small>
+            </div>
+
+            <p
+              class="text-muted small mb-0 text-truncate"
+              style="max-width: 400px"
+            >
+              <span class="fw-bold text-dark"
+                >{{ item.messages[-1].sender }}:</span
+              >
+              {{ item.messages[-1].body }}
+            </p>
+          </div>
+
+          <i class="bi bi-chevron-right text-muted ms-3"></i>
+        </a>
+        {% else %}
+        <div class="text-center py-5">
+          <i class="bi bi-inbox fs-1 text-muted"></i>
+          <p class="text-muted mt-2">No active conversations yet.</p>
+          <a href="/" class="btn btn-primary btn-sm rounded-pill"
+            >Browse Items</a
+          >
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

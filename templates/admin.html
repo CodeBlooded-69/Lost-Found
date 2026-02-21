@@ -1,0 +1,203 @@
+{% extends 'base.html' %} {% block content %}
+<div class="container-fluid">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold">Admin Dashboard</h2>
+    <span class="badge bg-danger p-2">Administrator Mode</span>
+  </div>
+
+  <div class="row g-4 mb-5">
+    <div class="col-md-6">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-header bg-white fw-bold">Report Distribution</div>
+        <div class="card-body">
+          <canvas id="typeChart" style="height: 300px;"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-header bg-white fw-bold">Items by Category</div>
+        <div class="card-body">
+          <canvas id="categoryChart" style="height: 300px;"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ul class="nav nav-tabs mb-4" id="adminTab" role="tablist">
+    <li class="nav-item">
+      <button
+        class="nav-link active fw-bold"
+        id="items-tab"
+        data-bs-toggle="tab"
+        data-bs-target="#items"
+        type="button"
+      >
+        Manage Items
+      </button>
+    </li>
+    <li class="nav-item">
+      <button
+        class="nav-link fw-bold"
+        id="users-tab"
+        data-bs-toggle="tab"
+        data-bs-target="#users"
+        type="button"
+      >
+        Manage Users
+      </button>
+    </li>
+  </ul>
+
+  <div class="tab-content" id="adminTabContent">
+    <div class="tab-pane fade show active" id="items" role="tabpanel">
+      <div class="card shadow-sm border-0">
+        <div class="card-body table-responsive">
+          <table class="table table-hover align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Item</th>
+                <th>Type</th>
+                <th>Category</th>
+                <th>Reported By</th>
+                <th>Date</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in items %}
+              <tr>
+                <td>
+                  <div class="d-flex align-items-center">
+                    <img
+                      src="{{ url_for('static', filename='uploads/' + item.image_file) }}"
+                      class="rounded me-2"
+                      style="width: 40px; height: 40px; object-fit: cover"
+                    />
+                    <span class="fw-bold">{{ item.name }}</span>
+                  </div>
+                </td>
+                <td>
+                  <span
+                    class="badge {% if item.type == 'Lost' %}bg-danger{% else %}bg-success{% endif %}"
+                  >
+                    {{ item.type }}
+                  </span>
+                </td>
+                <td>{{ item.category }}</td>
+                <td>{{ item.author.username }}</td>
+                <td>{{ item.date_posted.strftime('%Y-%m-%d') }}</td>
+                <td>
+                  <a
+                    href="/admin/delete_item/{{ item.id }}"
+                    class="btn btn-sm btn-outline-danger"
+                    onclick="return confirm('Delete this item permanently?');"
+                  >
+                    <i class="bi bi-trash"></i> Delete
+                  </a>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-pane fade" id="users" role="tabpanel">
+      <div class="card shadow-sm border-0">
+        <div class="card-body table-responsive">
+          <table class="table table-hover align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Karma</th>
+                <th>Role</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for user in users %}
+              <tr>
+                <td>#{{ user.id }}</td>
+                <td class="fw-bold">{{ user.username }}</td>
+                <td>{{ user.email }}</td>
+                <td>
+                  <span class="badge bg-warning text-dark"
+                    >{{ user.karma }} pts</span
+                  >
+                </td>
+                <td>
+                  {% if user.is_admin %}
+                  <span class="badge bg-dark">Admin</span>
+                  {% else %}
+                  <span class="badge bg-secondary">Student</span>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if not user.is_admin %}
+                  <a
+                    href="/admin/delete_user/{{ user.id }}"
+                    class="btn btn-sm btn-danger"
+                    onclick="return confirm('Ban this user? This action cannot be undone.');"
+                  >
+                    Ban User
+                  </a>
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+  // 1. PIE CHART: Lost vs Found
+  const ctxType = document.getElementById('typeChart').getContext('2d');
+  new Chart(ctxType, {
+      type: 'doughnut',
+      data: {
+          labels: ['Lost Items', 'Found Items'],
+          datasets: [{
+              data: [{{ lost_count }}, {{ found_count }}],
+              backgroundColor: ['#dc3545', '#198754'], // Red for Lost, Green for Found
+              borderWidth: 0
+          }]
+      },
+      options: { responsive: true, maintainAspectRatio: false }
+  });
+
+  // 2. BAR CHART: Categories
+  const ctxCat = document.getElementById('categoryChart').getContext('2d');
+  new Chart(ctxCat, {
+      type: 'bar',
+      data: {
+          labels: {{ categories | tojson | safe }},
+          datasets: [{
+              label: 'Number of Items',
+              data: {{ cat_counts | tojson | safe }},
+              backgroundColor: '#0d6efd',
+              borderRadius: 5
+          }]
+      },
+      options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+              y: { beginAtZero: true, ticks: { stepSize: 1 } }
+          },
+          plugins: { legend: { display: false } }
+      }
+  });
+</script>
+
+{% endblock %}

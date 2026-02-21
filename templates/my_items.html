@@ -1,0 +1,105 @@
+{% extends 'base.html' %} {% block content %}
+<div class="row mb-4">
+  <div class="col-12 text-center">
+    <h2 class="fw-bold text-dark">My Reported Items</h2>
+    <p class="text-muted">Manage your lost and found posts here.</p>
+  </div>
+</div>
+
+<div class="row g-4">
+  {% for item in items %}
+  <div class="col-md-6 col-lg-4">
+    {% if item.is_resolved %} {% set overlay = "opacity-50" %} {% set filter_val
+    = "grayscale(100%)" %} {% set badge_color = "bg-secondary" %} {% set
+    border_class = "bg-light border-success" %} {% else %} {% set overlay = ""
+    %} {% set filter_val = "grayscale(0%)" %} {% set badge_color = "bg-success"
+    %} {% set border_class = "border-0" %} {% endif %}
+
+    <div class="card h-100 shadow-sm {{ border_class }}">
+      <div class="position-relative">
+        <img
+          src="{{ url_for('static', filename='uploads/' + item.image_file) }}"
+          class="card-img-top {{ overlay }}"
+          alt="Item"
+          style="height: 200px; object-fit: cover; filter: {{ filter_val }}"
+        />
+
+        {% if item.is_resolved %}
+        <div
+          class="position-absolute top-50 start-50 translate-middle w-100 text-center"
+        >
+          <span class="badge bg-success fs-5 shadow px-4 py-2">
+            <i class="bi bi-check-circle-fill me-2"></i> RETURNED
+          </span>
+        </div>
+        {% else %}
+        <span
+          class="position-absolute top-0 end-0 badge rounded-pill m-3 {% if item.type == 'Lost' %}bg-danger{% else %}bg-success{% endif %}"
+        >
+          {{ item.type }}
+        </span>
+        {% endif %}
+      </div>
+
+      <div class="card-body">
+        <h5 class="fw-bold">{{ item.name }}</h5>
+
+        {% if item.type == 'Found' and not item.is_resolved %}
+        <div
+          class="alert alert-primary d-flex align-items-center p-2 my-3 rounded-3"
+        >
+          <div class="bg-white p-2 rounded me-3 text-primary">
+            <i class="bi bi-key-fill fs-4"></i>
+          </div>
+          <div class="lh-1">
+            <small
+              class="text-uppercase fw-bold opacity-75"
+              style="font-size: 0.65rem"
+              >Give this PIN to Owner</small
+            >
+            <div class="fw-bold fs-4">{{ item.pin }}</div>
+          </div>
+        </div>
+        {% endif %}
+        <p class="text-muted small">{{ item.description }}</p>
+        <h5
+          class="card-title fw-bold {% if item.is_resolved %}text-muted{% endif %}"
+        >
+          {{ item.name }}
+        </h5>
+        <p class="small text-muted mb-2">
+          Posted on: {{ item.date_posted.strftime('%Y-%m-%d') }}
+        </p>
+
+        {% if not item.is_resolved %}
+        <p class="card-text small text-secondary">{{ item.description }}</p>
+
+        <div class="d-grid mt-3">
+          <a
+            href="/mark_resolved/{{ item.id }}"
+            class="btn btn-outline-success rounded-pill fw-bold"
+          >
+            <i class="bi bi-check-lg me-1"></i> Mark as Returned
+          </a>
+          <small class="text-center text-muted mt-2" style="font-size: 0.7rem">
+            Click this when you get your item back.
+          </small>
+        </div>
+        {% else %}
+        <div class="alert alert-success mt-3 py-2 text-center small mb-0">
+          <i class="bi bi-stars"></i> Case Closed
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <div class="col-12 text-center py-5">
+    <h3 class="text-muted">You haven't posted anything yet.</h3>
+    <a href="/report" class="btn btn-primary rounded-pill mt-3"
+      >Report an Item</a
+    >
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}
